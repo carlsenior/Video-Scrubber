@@ -52,13 +52,18 @@ const FileUploadForm = ({ setUrl }: { setUrl: (arg0: string) => void }) => {
   };
 
   return (
-    <form className="py-6 px-9" onSubmit={onSubmit}>
-      <div className="pt-4 mb-6">
-        <div className="mb-8">
+    <form
+      className="py-6 px-9"
+      onSubmit={onSubmit}
+      encType="multipart/form-data"
+    >
+      <div className="pt-4 mb-6 ">
+        <div className="mb-8 bg-white rounded-md">
           <input
             type="file"
             name="file"
             id="file"
+            accept="video/*"
             className="sr-only"
             ref={fileInputRef}
             onChange={(e) => setFile(e.target.files?.[0])}

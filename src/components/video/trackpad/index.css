@@ -1,0 +1,9 @@
+.track-ticker {
+  border-top-width: 1px;
+}
+
+.track-seeker {
+  transform: rotate(180deg);
+  user-select: none;
+  pointer-events: none;
+}
