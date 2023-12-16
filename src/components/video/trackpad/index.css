@@ -1,9 +1,11 @@
 .track-ticker {
   border-top-width: 1px;
+  user-select: none;
+  pointer-events: none;
 }
 
 .track-seeker {
   transform: rotate(180deg);
-  user-select: none;
-  pointer-events: none;
+  /* user-select: none; */
+  /* pointer-events: none; */
 }

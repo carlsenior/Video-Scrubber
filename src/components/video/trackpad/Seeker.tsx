@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const Seeker = () => {
   const [mouseClicked, setMouseClicked] = useState(false);
@@ -6,31 +6,58 @@ const Seeker = () => {
     x: 0,
   });
   const [distanceX, setDistanceX] = useState(0);
+  const seekerRef = useRef(null);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log("mouse clicked");
-    // setInitialMousePos({
-    //   x: e.clientX,
-    // });
-    setMouseClicked(true);
+    if (e.buttons == 1) {
+      // only react to left mouse button
+      setInitialMousePos({
+        x: e.clientX,
+      });
+      setMouseClicked(true);
+    }
   };
 
   const handleMouseUp = () => {
     setMouseClicked(false);
   };
 
-  const handleSeekerMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!mouseClicked) return;
-
-    setDistanceX(e.clientX - initialMousePos.x);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleSeekerMove = (e: MouseEvent) => {
+    if (!mouseClicked || e.buttons != 1) return;
+    const deltaX = e.clientX - initialMousePos.x;
+    const translateX = getTranslateX(seekerRef);
+    let newTranslateX = translateX + deltaX;
+    if (newTranslateX < 0) newTranslateX = 0;
+    setDistanceX(newTranslateX);
+    setInitialMousePos({
+      x: e.clientX,
+    });
   };
+
+  const getTranslateX = (seekerRef: any) => {
+    const style = window.getComputedStyle(seekerRef.current);
+    const translateX = parseFloat(style.transform.split(",")[4]);
+    return translateX;
+  };
+
+  useEffect(() => {
+    if (mouseClicked) {
+      window.addEventListener("mousemove", handleSeekerMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleSeekerMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [handleSeekerMove, mouseClicked]);
 
   return (
     <div
       id="seeker"
+      ref={seekerRef}
       onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleSeekerMove}
       className="flex absolute w-[20px] h-full justify-center top-0 z-10 pointer-events-auto cursor-col-resize"
       style={{ transform: `translateX(${distanceX}px)` }}
     >

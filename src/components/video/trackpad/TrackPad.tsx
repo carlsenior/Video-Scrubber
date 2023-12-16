@@ -12,7 +12,7 @@ const TrackPad = ({ duration }: { duration: number }) => {
   });
   return (
     <div className="flex flex-col relative mt-4 w-full h-[200px] text-[#eee] overflow-y-hidden">
-      <div className="flex">{tickers}</div>
+      <div className="flex ml-[10px] user-select-none">{tickers}</div>
       <Seeker />
     </div>
   );
