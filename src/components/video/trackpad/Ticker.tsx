@@ -10,10 +10,16 @@ const getTimeString = (timeMs: number) => {
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 };
 
-const Ticker = ({ subDuration }: { subDuration: number }) => {
+const Ticker = ({
+  subDuration,
+  width,
+}: {
+  subDuration: number;
+  width: number;
+}) => {
   return (
-    <div className="flex flex-grow text-[10px] h-[20px] border-[#303030] border-solid border-l-2 track-ticker">
-      <span>{getTimeString(subDuration)}</span>
+    <div className="flex text-[10px] h-[20px] border-[#303030] border-solid border-l-2 track-ticker">
+      <span style={{ width: `${width}px` }}>{getTimeString(subDuration)}</span>
     </div>
   );
 };

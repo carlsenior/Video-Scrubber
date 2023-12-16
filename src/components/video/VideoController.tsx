@@ -34,14 +34,6 @@ const VideoController = ({ url }: { url: undefined | string }) => {
         onProgress={handleProgress}
       />
       <TrackPad duration={durationMs} />
-      {/* <input
-        className="rounded-lg overflow-hidden appearance-none bg-gray-400 h-3 w-full"
-        type="range"
-        min="0"
-        max={durationMs}
-        value={currentTimeMs}
-        onChange={handleSeekChange}
-      /> */}
     </div>
   ) : null;
 };

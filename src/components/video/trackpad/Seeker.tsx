@@ -42,6 +42,7 @@ const Seeker = () => {
   };
 
   useEffect(() => {
+    // add event listeners
     if (mouseClicked) {
       window.addEventListener("mousemove", handleSeekerMove);
       window.addEventListener("mouseup", handleMouseUp);
