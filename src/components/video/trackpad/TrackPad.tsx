@@ -24,19 +24,23 @@ const TrackPad = ({ duration }: { duration: number }) => {
     });
   }
 
-  console.log("create tickers");
   const tickers = getTicketsByCount(ticketsCount);
 
   const onScroll = (e: Event) => {
     const { scrollWidth, scrollLeft, clientWidth } =
       e.currentTarget as HTMLDivElement;
-    if (scrollLeft + clientWidth >= scrollWidth) {
+    if (scrollLeft + clientWidth * 0.5 >= scrollWidth * 0.6) {
       setTicketsCount(ticketsCount + 16);
+    } else if (scrollLeft + clientWidth * 0.5 < scrollWidth * 0.2) {
+      if (ticketsCount > 32) setTicketsCount(ticketsCount - 16);
     }
+
+    // if (scrollLeft + clientWidth * 0.5 < scrollWidth * 0.5) {
+    //   if (ticketsCount > 32) setTicketsCount(ticketsCount - 16);
+    // }
   };
 
   useEffect(() => {
-    console.log("useEffect");
     const parent_width = parentRef.current?.clientWidth as unknown as number;
     setticketWidth(Math.floor((parent_width - 22) / 16) - 2); // border left width: 2px, margin-left: 10px, additioinal 12px
 
