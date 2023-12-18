@@ -1,12 +1,19 @@
 "use client";
 
-import { uploadFile } from "@/lib/fileupload";
+import { uploadFile } from "@/lib/apiHelper";
 import React, { useRef, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import ProgressContainer from "./ProgressContainer";
 import { AxiosRequestConfig } from "axios";
+import path from "path";
 
-const FileUploadForm = ({ setUrl }: { setUrl: (arg0: string) => void }) => {
+const FileUploadForm = ({
+  setUrl,
+  setFileName,
+}: {
+  setUrl: (arg0: any) => void;
+  setFileName: (arg0: any) => void;
+}) => {
   const [file, setFile] = useState<File>();
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -15,6 +22,7 @@ const FileUploadForm = ({ setUrl }: { setUrl: (arg0: string) => void }) => {
 
   const clearFile = () => {
     setFile(undefined);
+    setFileName(undefined);
     if (fileInputRef.current) {
       (fileInputRef.current as HTMLInputElement).value = "";
     }
@@ -43,7 +51,8 @@ const FileUploadForm = ({ setUrl }: { setUrl: (arg0: string) => void }) => {
       setTimeout(() => {
         setProgress(0);
       }, 500);
-      setUrl(res.url);
+      setFileName(res.filename);
+      setUrl(path.join("tmp", "videos", res.filename));
     } catch (e: any) {
       console.error(e);
     } finally {

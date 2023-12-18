@@ -9,8 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/bluebird": "^3.5.42",
+    "@types/fluent-ffmpeg": "^2.1.24",
     "axios": "^1.6.2",
+    "bluebird": "^3.7.2",
+    "install": "^0.13.0",
     "next": "14.0.4",
+    "npm": "^10.2.5",
     "react": "^18",
     "react-dom": "^18",
     "react-player": "^2.14.0",
@@ -24,6 +29,7 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "fluent-ffmpeg": "^2.1.2",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"

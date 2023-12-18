@@ -2,7 +2,13 @@ import React, { useRef, useState } from "react";
 import ReactPlayer from "react-player";
 import TrackPad from "./trackpad/TrackPad";
 
-const VideoController = ({ url }: { url: undefined | string }) => {
+const VideoController = ({
+  url,
+  filename,
+}: {
+  url: undefined | string;
+  filename: undefined | string;
+}) => {
   const [durationMs, setDurationMs] = useState<number>(0);
   const [currentTimeMs, setCurrentTimeMs] = useState<number>(0);
   const playerRef = useRef(null);
@@ -33,7 +39,7 @@ const VideoController = ({ url }: { url: undefined | string }) => {
         onDuration={handleDurationMs}
         onProgress={handleProgress}
       />
-      <TrackPad duration={durationMs} />
+      <TrackPad duration={durationMs} url={url} filename={filename} />
     </div>
   ) : null;
 };

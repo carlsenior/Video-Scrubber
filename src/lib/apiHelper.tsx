@@ -7,3 +7,13 @@ export async function uploadFile(data: FormData, optioins: AxiosRequestConfig) {
   }
   return res.data;
 }
+
+export async function getThumbnails(filename: string) {
+  return await fetch("/api/thumbnails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ filename }),
+  }).then((res) => res.json());
+}
