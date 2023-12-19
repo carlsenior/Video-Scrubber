@@ -1,21 +1,14 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 import TrackPad from "./trackpad/TrackPad";
+import { AppContext } from "@/app/page";
+import path from "path";
 
-const VideoController = ({
-  url,
-  filename,
-}: {
-  url: undefined | string;
-  filename: undefined | string;
-}) => {
-  const [durationMs, setDurationMs] = useState<number>(0);
+const VideoController = () => {
   const [currentTimeMs, setCurrentTimeMs] = useState<number>(0);
   const playerRef = useRef(null);
 
-  const handleDurationMs = (durationInSeconds: number) => {
-    setDurationMs(durationInSeconds * 1000);
-  };
+  const { metaData, TMP_VIDEO_FOLDER } = useContext(AppContext);
 
   const handleProgress = (progress: any) => {
     setCurrentTimeMs(progress.playedSeconds * 1000);
@@ -29,17 +22,16 @@ const VideoController = ({
     player.seekTo(newTimeSeconds);
   };
 
-  return url ? (
+  return metaData?.filename ? (
     <div className="w-full">
       <ReactPlayer
         ref={playerRef}
         controls
-        url={url}
+        url={path.join(TMP_VIDEO_FOLDER, metaData.filename)}
         width="100%"
-        onDuration={handleDurationMs}
-        onProgress={handleProgress}
+        // onProgress={handleProgress}
       />
-      <TrackPad duration={durationMs} url={url} filename={filename} />
+      <TrackPad />
     </div>
   ) : null;
 };

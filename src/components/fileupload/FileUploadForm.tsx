@@ -1,30 +1,28 @@
 "use client";
 
-import { uploadFile } from "@/lib/apiHelper";
-import React, { useRef, useState } from "react";
+import { deleteFile, uploadFile } from "@/lib/apiHelper";
+import React, { useContext, useRef, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import ProgressContainer from "./ProgressContainer";
 import { AxiosRequestConfig } from "axios";
-import path from "path";
+import { AppContext } from "@/app/page";
 
-const FileUploadForm = ({
-  setUrl,
-  setFileName,
-}: {
-  setUrl: (arg0: any) => void;
-  setFileName: (arg0: any) => void;
-}) => {
+const FileUploadForm = () => {
   const [file, setFile] = useState<File>();
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const { metaData, setMetaData } = useContext(AppContext);
 
   const fileInputRef = useRef(null);
 
-  const clearFile = () => {
+  const clearFile = async () => {
+    setMetaData(undefined);
     setFile(undefined);
-    setFileName(undefined);
     if (fileInputRef.current) {
       (fileInputRef.current as HTMLInputElement).value = "";
+    }
+    if (metaData?.filename) {
+      await deleteFile(metaData.filename);
     }
   };
 
@@ -48,11 +46,16 @@ const FileUploadForm = ({
       };
 
       const res = await uploadFile(data, options);
+
+      setMetaData({
+        duration: res.metadata.format.duration,
+        filename: res.filename,
+        timestamps: res.timestamps,
+      });
+
       setTimeout(() => {
         setProgress(0);
       }, 500);
-      setFileName(res.filename);
-      setUrl(path.join("tmp", "videos", res.filename));
     } catch (e: any) {
       console.error(e);
     } finally {
@@ -75,6 +78,7 @@ const FileUploadForm = ({
             accept="video/*"
             className="sr-only"
             ref={fileInputRef}
+            disabled={uploading}
             onChange={(e) => setFile(e.target.files?.[0])}
           />
           <label

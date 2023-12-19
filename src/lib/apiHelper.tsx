@@ -8,8 +8,8 @@ export async function uploadFile(data: FormData, optioins: AxiosRequestConfig) {
   return res.data;
 }
 
-export async function getThumbnails(filename: string) {
-  return await fetch("/api/thumbnails", {
+export async function deleteFile(filename: string) {
+  return await fetch("/api/delete", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
