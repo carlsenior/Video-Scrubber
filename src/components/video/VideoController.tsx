@@ -15,11 +15,16 @@ const VideoController = () => {
   };
 
   const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTimeMs = parseFloat(e.target.value);
-    setCurrentTimeMs(newTimeMs);
-    const newTimeSeconds = newTimeMs / 1000; // Convert back to seconds for seeking
+    // const newTimeMs = parseFloat(e.target.value);
+    // setCurrentTimeMs(newTimeMs);
+    // const newTimeSeconds = newTimeMs / 1000; // Convert back to seconds for seeking
+    // const player = playerRef.current as unknown as ReactPlayer;
+    // player.seekTo(newTimeSeconds);
+  };
+
+  const seekTo = (toInSeconds: number) => {
     const player = playerRef.current as unknown as ReactPlayer;
-    player.seekTo(newTimeSeconds);
+    player.seekTo(toInSeconds);
   };
 
   return metaData?.filename ? (
@@ -29,9 +34,9 @@ const VideoController = () => {
         controls
         url={path.join(TMP_VIDEO_FOLDER, metaData.filename)}
         width="100%"
-        // onProgress={handleProgress}
+        onProgress={handleProgress}
       />
-      <TrackPad />
+      <TrackPad currentTimeMs={currentTimeMs} seekTo={seekTo} />
     </div>
   ) : null;
 };

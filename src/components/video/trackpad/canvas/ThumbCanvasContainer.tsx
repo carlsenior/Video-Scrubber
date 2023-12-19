@@ -6,19 +6,20 @@ import { AppContext } from "@/app/page";
 
 const ThumbCanvasContainer = ({ tickerWidth }: { tickerWidth: number }) => {
   const parentRef = useRef<HTMLDivElement>(null);
-  const { metaData } = useContext(AppContext);
+  const { CELLS_COUNT } = useContext(AppContext);
 
   const [size, setSize] = useState({
-    width: (tickerWidth + 2) * 16,
+    width: tickerWidth * CELLS_COUNT, // cell size is tickerWidth + 2px for border
     height: 0,
   });
 
   useEffect(() => {
     const containerDiv = parentRef.current as unknown as HTMLCanvasElement;
     setSize({
-      width: (tickerWidth + 2) * 16,
+      width: tickerWidth * CELLS_COUNT,
       height: containerDiv.clientHeight,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickerWidth]);
 
   return (

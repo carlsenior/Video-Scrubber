@@ -65,30 +65,13 @@ const ThumbCanvas = ({
       drawCanvasFromImage(
         image_url,
         ctx,
-        (tickerWidth + 2) * i, // left border width = 2
+        tickerWidth * i,
         0,
-        canvas_width > tickerWidth + 2 ? tickerWidth + 2 : canvas_width,
+        canvas_width > tickerWidth ? tickerWidth : canvas_width,
         size.height
       );
-      canvas_width -= tickerWidth + 2;
+      canvas_width -= tickerWidth;
     });
-
-    // let total_duration = duration * 1000; // miliseconds
-    // console.log(total_duration, tickerDuration);
-    // res.filenames.forEach((filename: string, i: number) => {
-    //   const remaining_duration = total_duration - tickerDuration * i;
-    //   drawCanvasFromImage(
-    //     filename,
-    //     canvas,
-    //     (tickerWidth + 2) * i, // left border width = 2
-    //     0,
-    //     (tickerWidth + 2) *
-    //       (remaining_duration / tickerDuration >= 1
-    //         ? 1
-    //         : remaining_duration / tickerDuration),
-    //     canvas.height
-    //   );
-    // });
   };
 
   useEffect(() => {

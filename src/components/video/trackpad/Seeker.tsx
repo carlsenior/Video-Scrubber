@@ -1,11 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
+import { AppContext } from "@/app/page";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import debounce from "lodash.debounce";
 
-const Seeker = () => {
+const Seeker = ({
+  currentTimeMs,
+  tickerWidth,
+  seekTo,
+}: {
+  currentTimeMs: number;
+  tickerWidth: number;
+  seekTo: (toInSeconds: number) => void;
+}) => {
   const [mouseClicked, setMouseClicked] = useState(false);
   const [initialMousePos, setInitialMousePos] = useState({
     x: 0,
   });
   const [distanceX, setDistanceX] = useState(0);
+  const { CELLS_COUNT, metaData } = useContext(AppContext);
+  const _seekTo = debounce(seekTo, 100);
   const seekerRef = useRef(null);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -22,6 +34,9 @@ const Seeker = () => {
     setMouseClicked(false);
   };
 
+  const total_canvas_width = tickerWidth * CELLS_COUNT;
+  const total_duration = metaData.duration;
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSeekerMove = (e: MouseEvent) => {
     if (!mouseClicked || e.buttons != 1) return;
@@ -33,6 +48,10 @@ const Seeker = () => {
     setInitialMousePos({
       x: e.clientX,
     });
+    // TODO
+    const seek_to_seconds =
+      (newTranslateX / total_canvas_width) * total_duration;
+    _seekTo(seek_to_seconds);
   };
 
   const getTranslateX = (seekerRef: any) => {
@@ -41,17 +60,32 @@ const Seeker = () => {
     return translateX;
   };
 
+  // // move seeker to played time
+  // if (currentTimeMs > 0) {
+  //   let new_distance =
+  //     (currentTimeMs / total_duration / 1000) * total_canvas_width;
+  //   setDistanceX(new_distance);
+  //   setInitialMousePos({
+  //     x: new_distance,
+  //   });
+  // }
+
   useEffect(() => {
     // add event listeners
     if (mouseClicked) {
       window.addEventListener("mousemove", handleSeekerMove);
-      window.addEventListener("mouseup", handleMouseUp);
     }
+
+    // if (started) {
+    //   window.removeEventListener("mousemove", handleSeekerMove);
+    // } else {
+    //   window.addEventListener("mousemove", handleSeekerMove);
+    // }
 
     return () => {
       window.removeEventListener("mousemove", handleSeekerMove);
-      window.removeEventListener("mouseup", handleMouseUp);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleSeekerMove, mouseClicked]);
 
   return (
@@ -59,6 +93,7 @@ const Seeker = () => {
       id="seeker"
       ref={seekerRef}
       onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
       className="flex absolute w-[20px] h-full justify-center top-0 z-10 pointer-events-auto cursor-col-resize"
       style={{ transform: `translateX(${distanceX}px)` }}
     >
