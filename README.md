@@ -1,6 +1,6 @@
 > [!NOTE]
 >
-> ### <code style="color : aqua">Next.js Custom Component for Modern Video Editor</code>
+> ## <code style="color : aqua">Next.js Custom Component for Modern Video Editor</code>
 >
 > This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
