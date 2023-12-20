@@ -1,33 +1,45 @@
 import { AppContext } from "@/app/page";
+import { toTimeString } from "@/lib/generalHelpers";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import debounce from "lodash.debounce";
 
 const Seeker = ({
   currentTimeMs,
   tickerWidth,
+  playing,
   seekTo,
 }: {
   currentTimeMs: number;
   tickerWidth: number;
+  playing: boolean;
   seekTo: (toInSeconds: number) => void;
 }) => {
   const [mouseClicked, setMouseClicked] = useState(false);
-  const [initialMousePos, setInitialMousePos] = useState({
+  const [mousePos, setMousePos] = useState({
     x: 0,
+    y: 0,
   });
-  const [distanceX, setDistanceX] = useState(0);
   const { CELLS_COUNT, metaData } = useContext(AppContext);
-  const _seekTo = debounce(seekTo, 100);
   const seekerRef = useRef(null);
+  const timeViewRef = useRef(null);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.buttons == 1) {
       // only react to left mouse button
-      setInitialMousePos({
+      setMousePos({
         x: e.clientX,
+        y: e.clientY,
       });
       setMouseClicked(true);
     }
+  };
+
+  const setTimeViewerPos = () => {
+    // get the distance between the mouse position and the top of the timeView
+    const timerView = timeViewRef.current as unknown as HTMLDivElement;
+    const parentElement = timerView.parentElement as HTMLDivElement;
+    const seekBarElement = parentElement.parentElement as HTMLDivElement;
+    const distanceY = mousePos.y - seekBarElement.getBoundingClientRect().top;
+    parentElement.style.marginTop = `${distanceY + 5}px`; // 5px offset Y for beauty
   };
 
   const handleMouseUp = () => {
@@ -40,62 +52,66 @@ const Seeker = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSeekerMove = (e: MouseEvent) => {
     if (!mouseClicked || e.buttons != 1) return;
-    const deltaX = e.clientX - initialMousePos.x;
+    const deltaX = e.clientX - mousePos.x;
     const translateX = getTranslateX(seekerRef);
     let newTranslateX = translateX + deltaX;
     if (newTranslateX < 0) newTranslateX = 0;
-    setDistanceX(newTranslateX);
-    setInitialMousePos({
+    if (newTranslateX > total_canvas_width) newTranslateX = total_canvas_width;
+    moveSeekBar(newTranslateX);
+    setMousePos({
       x: e.clientX,
+      y: e.clientY,
     });
-    // TODO
     const seek_to_seconds =
       (newTranslateX / total_canvas_width) * total_duration;
-    _seekTo(seek_to_seconds);
+    seekTo(seek_to_seconds);
+    setTimeViewContent(Math.floor(seek_to_seconds * 1000));
+  };
+
+  const setTimeViewContent = (timeMS: number) => {
+    const timeView = timeViewRef.current as unknown as HTMLDivElement;
+    timeView.textContent = toTimeString(timeMS, true, false);
+  };
+
+  const moveSeekBar = (distanec: number) => {
+    const seekDiv = seekerRef.current as unknown as HTMLDivElement;
+    seekDiv.style.transform = `translateX(${distanec}px)`;
   };
 
   const getTranslateX = (seekerRef: any) => {
     const style = window.getComputedStyle(seekerRef.current);
     const translateX = parseFloat(style.transform.split(",")[4]);
-    return translateX;
+    return translateX ? translateX : 0;
   };
-
-  // // move seeker to played time
-  // if (currentTimeMs > 0) {
-  //   let new_distance =
-  //     (currentTimeMs / total_duration / 1000) * total_canvas_width;
-  //   setDistanceX(new_distance);
-  //   setInitialMousePos({
-  //     x: new_distance,
-  //   });
-  // }
 
   useEffect(() => {
     // add event listeners
     if (mouseClicked) {
       window.addEventListener("mousemove", handleSeekerMove);
+      window.addEventListener("mouseup", handleMouseUp);
+      setTimeViewerPos();
+    } else {
+      // move seeker to played time
+      if (playing && currentTimeMs >= 0) {
+        let new_distance =
+          (currentTimeMs / total_duration / 1000) * total_canvas_width;
+        moveSeekBar(new_distance);
+      }
     }
-
-    // if (started) {
-    //   window.removeEventListener("mousemove", handleSeekerMove);
-    // } else {
-    //   window.addEventListener("mousemove", handleSeekerMove);
-    // }
 
     return () => {
       window.removeEventListener("mousemove", handleSeekerMove);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleSeekerMove, mouseClicked]);
+  }, [handleSeekerMove, currentTimeMs, mouseClicked]);
 
   return (
     <div
       id="seeker"
       ref={seekerRef}
       onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      className="flex absolute w-[20px] h-full justify-center top-0 z-10 pointer-events-auto cursor-col-resize"
-      style={{ transform: `translateX(${distanceX}px)` }}
+      className="flex absolute w-[20px] h-full justify-center top-0 z-10 cursor-col-resize"
     >
       <svg
         viewBox="0 0 10 13"
@@ -110,7 +126,18 @@ const Seeker = ({
           strokeWidth="0.8"
         ></path>
       </svg>
-      <div className="pt-[5px] w-[2px] bg-white"></div>
+      <div className="pt-[5px] w-[2px] bg-white relative">
+        {mouseClicked ? (
+          <div className="relative">
+            <span
+              className="absolute bg-white text-[#101010] text-[10px] text-center font-bold p-1 rounded timeviewer"
+              ref={timeViewRef}
+            >
+              00:00:00
+            </span>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import path from "path";
 
 const VideoController = () => {
   const [currentTimeMs, setCurrentTimeMs] = useState<number>(0);
+  const [playing, setPlaying] = useState<boolean>(false);
   const playerRef = useRef(null);
 
   const { metaData, TMP_VIDEO_FOLDER } = useContext(AppContext);
@@ -32,11 +33,28 @@ const VideoController = () => {
       <ReactPlayer
         ref={playerRef}
         controls
+        progressInterval={200}
         url={path.join(TMP_VIDEO_FOLDER, metaData.filename)}
         width="100%"
         onProgress={handleProgress}
+        onStart={() => {
+          setPlaying(true);
+        }}
+        onPlay={() => {
+          setPlaying(true);
+        }}
+        onPause={() => {
+          setPlaying(false);
+        }}
+        onEnded={() => {
+          setPlaying(false);
+        }}
       />
-      <TrackPad currentTimeMs={currentTimeMs} seekTo={seekTo} />
+      <TrackPad
+        currentTimeMs={currentTimeMs}
+        seekTo={seekTo}
+        playing={playing}
+      />
     </div>
   ) : null;
 };

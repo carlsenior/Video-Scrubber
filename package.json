@@ -11,12 +11,10 @@
   "dependencies": {
     "@types/bluebird": "^3.5.42",
     "@types/fluent-ffmpeg": "^2.1.24",
-    "@types/lodash.debounce": "^4.0.9",
     "axios": "^1.6.2",
     "bluebird": "^3.7.2",
     "ffmpeg": "^0.0.4",
     "install": "^0.13.0",
-    "lodash.debounce": "^4.0.8",
     "next": "14.0.4",
     "npm": "^10.2.5",
     "react": "^18",

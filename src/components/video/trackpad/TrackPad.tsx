@@ -12,9 +12,11 @@ import ThumbCanvasContainer from "./canvas/ThumbCanvasContainer";
 const TrackPad = ({
   currentTimeMs,
   seekTo,
+  playing,
 }: {
   currentTimeMs: number;
   seekTo: (toInSeconds: number) => void;
+  playing: boolean;
 }) => {
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -70,6 +72,7 @@ const TrackPad = ({
       <Seeker
         currentTimeMs={currentTimeMs}
         tickerWidth={tickerWidth}
+        playing={playing}
         seekTo={seekTo}
       />
     </div>

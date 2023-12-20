@@ -23,7 +23,7 @@ export default function Home() {
         setMetaData,
       }}
     >
-      <main className="flex min-h-screen p-2 font-mono">
+      <main className="min-h-screen p-2 font-mono">
         <div className="grid grid-cols-4 gap-4">
           <div className="col-span-1">
             <div className="bg-[#101010]">

@@ -7,3 +7,11 @@
 .track-seeker {
   transform: rotate(180deg);
 }
+
+.user-select-none {
+  user-select: none;
+}
+
+.timeviewer {
+  transform: translateX(-50%);
+}
