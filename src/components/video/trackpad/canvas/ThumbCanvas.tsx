@@ -81,7 +81,14 @@ const ThumbCanvas = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size.width]);
 
-  return <canvas width={size.width} height={size.height} ref={canvasRef} />;
+  return (
+    <canvas
+      className="rounded"
+      width={size.width}
+      height={size.height}
+      ref={canvasRef}
+    />
+  );
 };
 
 export default ThumbCanvas;
