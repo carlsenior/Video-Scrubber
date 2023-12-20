@@ -2,12 +2,14 @@ import React, { FormEvent, FormEventHandler, useEffect } from "react";
 import "./index.scss";
 
 const RangeInput = ({
+  left,
   size,
   rStart,
   rEnd,
   handleUpdateStart,
   handleUpdateEnd,
 }: {
+  left: number;
   size: {
     width: number;
     height: number;
@@ -25,8 +27,8 @@ const RangeInput = ({
 
   return (
     <div
-      className="absolute left-0 top-0 rounded"
-      style={{ height: size.height, width: size.width }}
+      className="absolute top-0"
+      style={{ left, height: size.height, width: size.width }}
     >
       <div
         className="absolute rounded clip-box"

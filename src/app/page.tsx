@@ -6,7 +6,8 @@ import { createContext, useState } from "react";
 import path from "path";
 
 const TMP_VIDEO_FOLDER = path.join("tmp", "videos");
-const TMP_THUMB_FOLDER = path.join("tmp", "thumbnails"); // should be nested in video filename
+const TMP_THUMB_FOLDER = path.join("tmp", "thumbnails"); // should be nested in original video filename
+const TMP_WORKS_FOLDER = path.join("tmp", "works"); // should be nested in original video filename
 const CELLS_COUNT = 16;
 const AppContext = createContext<any>({});
 
@@ -18,6 +19,7 @@ export default function Home() {
       value={{
         TMP_VIDEO_FOLDER,
         TMP_THUMB_FOLDER,
+        TMP_WORKS_FOLDER,
         CELLS_COUNT,
         metaData,
         setMetaData,

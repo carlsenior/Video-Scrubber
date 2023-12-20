@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { v4 as uuid } from "uuid";
 import "./index.css";
-import { getTickerTimestamps } from "@/lib/generalHelpers";
-import Ticker from "./Ticker";
 import Seeker from "./Seeker";
 import { AppContext } from "@/app/page";
+import TickersList from "./TickersList";
 import ThumbCanvasContainer from "./canvas/ThumbCanvasContainer";
 
 const TrackPad = ({
@@ -19,30 +17,16 @@ const TrackPad = ({
   playing: boolean;
 }) => {
   const parentRef = useRef<HTMLDivElement>(null);
-
-  const { metaData, CELLS_COUNT } = useContext(AppContext);
+  const { CELLS_COUNT } = useContext(AppContext);
 
   const [tickerWidth, setTickerWidth] = useState(0);
   const [tickerCounts, setTickerCounts] = useState(CELLS_COUNT * 2); // because intial ticker count is 16
 
-  function getTicketsByCount(count: number) {
-    const tickerTimeStamps = getTickerTimestamps(
-      (metaData.duration * count) / CELLS_COUNT,
-      count,
-      false
-    ); // typically draw total duration within 16 tickers - on screen appproximately
-    return Array.from({ length: count }, (_, i) => {
-      return (
-        <Ticker
-          key={uuid()}
-          tickerLabel={tickerTimeStamps[i]}
-          width={tickerWidth}
-        />
-      );
-    });
-  }
+  const [movePayload, setMovePayload] = useState({
+    move: false,
+    distance: 0,
+  });
 
-  const tickers = getTicketsByCount(tickerCounts);
   const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollWidth, scrollLeft, clientWidth } =
       e.currentTarget as HTMLDivElement;
@@ -53,6 +37,11 @@ const TrackPad = ({
       // decrease ticker count
       if (tickerCounts > 32) setTickerCounts(tickerCounts - CELLS_COUNT / 2); // -8 cells for smoothly scrolling
     }
+  };
+
+  const moveSeekBar = (distanceX: number) => {
+    const seekBar = parentRef.current!.parentElement as HTMLDivElement;
+    seekBar.style.transform = `translateX(${distanceX}px)`;
   };
 
   useEffect(() => {
@@ -67,13 +56,18 @@ const TrackPad = ({
       ref={parentRef}
       onScroll={onScroll}
     >
-      <div className="flex ml-[10px]">{tickers}</div>
+      <TickersList
+        count={tickerCounts}
+        tickerWidth={tickerWidth}
+        handleMoveSeekBar={setMovePayload}
+      />
       <ThumbCanvasContainer tickerWidth={tickerWidth} />
       <Seeker
         currentTimeMs={currentTimeMs}
         tickerWidth={tickerWidth}
         playing={playing}
         seekTo={seekTo}
+        movePayload={movePayload}
       />
     </div>
   );

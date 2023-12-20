@@ -4,7 +4,7 @@ import fs from "fs";
 
 export async function POST(request: NextRequest) {
   const { filename } = await request.json();
-  const absolute_path = path.join(
+  const absolute_original_video_path = path.join(
     process.cwd(),
     "public",
     "tmp",
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     filename
   );
 
-  const absolute_thumb_path = path.join(
+  const absolute_thumbnails_dir = path.join(
     process.cwd(),
     "public",
     "tmp",
@@ -20,10 +20,21 @@ export async function POST(request: NextRequest) {
     filename
   );
 
-  if (fs.existsSync(absolute_path)) {
-    fs.unlinkSync(absolute_path);
-    if (fs.existsSync(absolute_thumb_path)) {
-      fs.promises.rmdir(absolute_thumb_path, { recursive: true });
+  const absolute_works_dir = path.join(
+    process.cwd(),
+    "public",
+    "tmp",
+    "works",
+    filename
+  );
+
+  if (fs.existsSync(absolute_original_video_path)) {
+    fs.unlinkSync(absolute_original_video_path);
+    if (fs.existsSync(absolute_thumbnails_dir)) {
+      fs.promises.rmdir(absolute_thumbnails_dir, { recursive: true });
+    }
+    if (fs.existsSync(absolute_works_dir)) {
+      fs.promises.rmdir(absolute_works_dir, { recursive: true });
     }
     return NextResponse.json({ success: true });
   }

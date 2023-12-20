@@ -10,6 +10,8 @@ import React, {
 import ThumbCanvas from "./ThumbCanvas";
 import { AppContext } from "@/app/page";
 import RangeInput from "../ranges/RangeInput";
+import debounce from "lodash.debounce";
+import RangeInputList from "../ranges/RangeInputList";
 
 const ThumbCanvasContainer = ({ tickerWidth }: { tickerWidth: number }) => {
   // states for canvas
@@ -43,13 +45,7 @@ const ThumbCanvasContainer = ({ tickerWidth }: { tickerWidth: number }) => {
   return (
     <div className="ml-[10px] mt-1 sm:mt-3 h-10 relative" ref={parentRef}>
       <ThumbCanvas size={size} tickerWidth={tickerWidth} />
-      <RangeInput
-        size={size}
-        rStart={rStart}
-        rEnd={rEnd}
-        handleUpdateStart={handleUpdateRange(setRStart)}
-        handleUpdateEnd={handleUpdateRange(setREnd)}
-      />
+      <RangeInputList canvasSize={size} />
     </div>
   );
 };

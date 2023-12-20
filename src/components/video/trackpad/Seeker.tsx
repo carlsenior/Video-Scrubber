@@ -7,11 +7,13 @@ const Seeker = ({
   tickerWidth,
   playing,
   seekTo,
+  movePayload,
 }: {
   currentTimeMs: number;
   tickerWidth: number;
   playing: boolean;
   seekTo: (toInSeconds: number) => void;
+  movePayload: { move: boolean; distance: number };
 }) => {
   const [mouseClicked, setMouseClicked] = useState(false);
   const [mousePos, setMousePos] = useState({
@@ -19,6 +21,7 @@ const Seeker = ({
     y: 0,
   });
   const { CELLS_COUNT, metaData } = useContext(AppContext);
+
   const seekerRef = useRef(null);
   const timeViewRef = useRef(null);
 
@@ -73,9 +76,9 @@ const Seeker = ({
     timeView.textContent = toTimeString(timeMS, true, false);
   };
 
-  const moveSeekBar = (distanec: number) => {
+  const moveSeekBar = (distanceX: number) => {
     const seekDiv = seekerRef.current as unknown as HTMLDivElement;
-    seekDiv.style.transform = `translateX(${distanec}px)`;
+    seekDiv.style.transform = `translateX(${distanceX}px)`;
   };
 
   const getTranslateX = (seekerRef: any) => {
@@ -85,6 +88,14 @@ const Seeker = ({
   };
 
   useEffect(() => {
+    // register move seekbar request from tickerlist
+    if (movePayload.move) {
+      const seek_to_seconds =
+        (movePayload.distance / total_canvas_width) * total_duration;
+      seekTo(seek_to_seconds);
+      moveSeekBar(movePayload.distance);
+      movePayload.move = false;
+    }
     // add event listeners
     if (mouseClicked) {
       window.addEventListener("mousemove", handleSeekerMove);

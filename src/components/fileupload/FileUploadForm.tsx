@@ -51,6 +51,7 @@ const FileUploadForm = () => {
         duration: res.metadata.format.duration,
         filename: res.filename,
         timestamps: res.timestamps,
+        works: [res.workfilename],
       });
 
       setTimeout(() => {

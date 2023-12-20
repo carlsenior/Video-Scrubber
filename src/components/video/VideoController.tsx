@@ -9,7 +9,7 @@ const VideoController = () => {
   const [playing, setPlaying] = useState<boolean>(false);
   const playerRef = useRef(null);
 
-  const { metaData, TMP_VIDEO_FOLDER } = useContext(AppContext);
+  const { metaData, TMP_WORKS_FOLDER } = useContext(AppContext);
 
   const handleProgress = (progress: any) => {
     setCurrentTimeMs(progress.playedSeconds * 1000);
@@ -34,7 +34,7 @@ const VideoController = () => {
         ref={playerRef}
         controls
         progressInterval={200}
-        url={path.join(TMP_VIDEO_FOLDER, metaData.filename)}
+        url={path.join(TMP_WORKS_FOLDER, metaData.filename, metaData.works[0])}
         width="100%"
         onProgress={handleProgress}
         onStart={() => {

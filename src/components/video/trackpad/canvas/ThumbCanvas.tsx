@@ -13,7 +13,6 @@ const ThumbCanvas = ({
   tickerWidth: number;
 }) => {
   const { metaData, TMP_THUMB_FOLDER } = useContext(AppContext);
-  const duration = metaData.duration;
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const drawCanvasFromImage = (

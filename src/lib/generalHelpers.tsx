@@ -62,8 +62,8 @@ export function toTimeString(
   );
 }
 
-export function getTimestampsFromFileNames(fiienames: string[]) {
-  return fiienames.map((filename) => {
-    return parseFloat(filename.replace(/\.png$/g, ""));
-  });
+// filename is 00000_12345598.mp4 (Ms)
+export function getTimeStampsMsFromFileName(filename: string) {
+  const _remove_ext_name = filename.replace(/\..+$/g, "");
+  return _remove_ext_name.split("_").map((x) => Number(x));
 }
