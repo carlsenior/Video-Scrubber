@@ -19,7 +19,7 @@ const ProgressContainer = ({
         <span className="truncate pr-3 text-base font-medium text-[#07074D]">
           {file.name}
         </span>
-        {metaData?.filename ? (
+        {metaData?.basename ? (
           <button type="button" className="text-[#07074D]" onClick={clearFile}>
             <svg
               width="10"

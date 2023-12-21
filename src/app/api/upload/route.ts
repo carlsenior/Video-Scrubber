@@ -101,8 +101,6 @@ export async function POST(request: NextRequest) {
           return cb(null, metadata);
         });
       })().then((metadata: any) => {
-        console.log("metadata", metadata);
-
         // create working file named start_end.mp4, start and end is timestampsMS streamed in
         const _work_file_name = `00000_${Math.floor(
           metadata.format.duration * 1000
@@ -134,8 +132,8 @@ export async function POST(request: NextRequest) {
               success: true,
               metadata,
               timestamps,
-              filename: file_name,
-              workfilename: _work_file_name,
+              basename: file_name,
+              workfilenames: [_work_file_name],
             });
           })
           .catch((err) => {

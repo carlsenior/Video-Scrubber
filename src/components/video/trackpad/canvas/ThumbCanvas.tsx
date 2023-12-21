@@ -58,7 +58,7 @@ const ThumbCanvas = ({
     thumbnail_image_names.forEach((filename: string, i: number) => {
       const image_url = path.join(
         TMP_THUMB_FOLDER,
-        metaData.filename!,
+        metaData.basename!,
         filename
       );
       drawCanvasFromImage(

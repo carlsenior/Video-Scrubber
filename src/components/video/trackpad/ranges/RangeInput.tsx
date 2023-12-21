@@ -6,8 +6,10 @@ import React, {
   useEffect,
 } from "react";
 import "./index.scss";
+import { props } from "bluebird";
 
 const RangeInput = ({
+  workfile,
   left,
   size,
   rStart,
@@ -15,6 +17,7 @@ const RangeInput = ({
   handleUpdateStart,
   handleUpdateEnd,
 }: {
+  workfile: string;
   left: number;
   size: {
     width: number;
@@ -22,8 +25,11 @@ const RangeInput = ({
   };
   rStart: number;
   rEnd: number;
-  handleUpdateStart: ChangeEventHandler<HTMLInputElement>;
-  handleUpdateEnd: ChangeEventHandler<HTMLInputElement>;
+  handleUpdateStart: (
+    arg0: string,
+    arg1: ChangeEvent<HTMLInputElement>
+  ) => void;
+  handleUpdateEnd: (arg0: string, arg1: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   useEffect(() => {
     if (size.height == 0) return;
@@ -53,14 +59,18 @@ const RangeInput = ({
         value={rStart}
         min={0}
         max={100}
-        onInput={handleUpdateStart}
+        onInput={(e: ChangeEvent<HTMLInputElement>) =>
+          handleUpdateStart(workfile, e)
+        }
       />
       <input
         type="range"
         value={rEnd}
         min={0}
         max={100}
-        onInput={handleUpdateEnd}
+        onInput={(e: ChangeEvent<HTMLInputElement>) =>
+          handleUpdateEnd(workfile, e)
+        }
       />
     </div>
   );

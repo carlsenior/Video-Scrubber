@@ -21,8 +21,8 @@ const FileUploadForm = () => {
     if (fileInputRef.current) {
       (fileInputRef.current as HTMLInputElement).value = "";
     }
-    if (metaData?.filename) {
-      await deleteFile(metaData.filename);
+    if (metaData?.basename) {
+      await deleteFile(metaData.basename);
     }
   };
 
@@ -49,9 +49,9 @@ const FileUploadForm = () => {
 
       setMetaData({
         duration: res.metadata.format.duration,
-        filename: res.filename,
+        basename: res.basename,
         timestamps: res.timestamps,
-        works: [res.workfilename],
+        works: res.workfilenames,
       });
 
       setTimeout(() => {
