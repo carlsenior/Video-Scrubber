@@ -50,11 +50,11 @@ const VideoController = () => {
           setPlaying(false);
         }}
       />
-      <TrackPad
+      {/* <TrackPad
         currentTimeMs={currentTimeMs}
         seekTo={seekTo}
         playing={playing}
-      />
+      /> */}
     </div>
   ) : null;
 };

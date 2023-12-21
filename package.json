@@ -11,12 +11,12 @@
   "dependencies": {
     "@types/bluebird": "^3.5.42",
     "@types/fluent-ffmpeg": "^2.1.24",
-    "@types/lodash.debounce": "^4.0.9",
+    "@types/lodash": "^4.14.202",
     "axios": "^1.6.2",
     "bluebird": "^3.7.2",
     "ffmpeg": "^0.0.4",
     "install": "^0.13.0",
-    "lodash.debounce": "^4.0.8",
+    "lodash": "^4.17.21",
     "next": "14.0.4",
     "npm": "^10.2.5",
     "react": "^18",
@@ -26,7 +26,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.10.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/uuid": "^9.0.7",

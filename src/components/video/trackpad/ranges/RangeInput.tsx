@@ -1,4 +1,10 @@
-import React, { FormEvent, FormEventHandler, useEffect } from "react";
+import React, {
+  ChangeEvent,
+  ChangeEventHandler,
+  FormEvent,
+  FormEventHandler,
+  useEffect,
+} from "react";
 import "./index.scss";
 
 const RangeInput = ({
@@ -16,8 +22,8 @@ const RangeInput = ({
   };
   rStart: number;
   rEnd: number;
-  handleUpdateStart: FormEventHandler<HTMLInputElement>;
-  handleUpdateEnd: FormEventHandler<HTMLInputElement>;
+  handleUpdateStart: ChangeEventHandler<HTMLInputElement>;
+  handleUpdateEnd: ChangeEventHandler<HTMLInputElement>;
 }) => {
   useEffect(() => {
     if (size.height == 0) return;

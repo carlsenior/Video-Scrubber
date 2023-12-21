@@ -27,6 +27,14 @@ export async function POST(request: NextRequest) {
     file_name
   );
 
+  const _streamable_video_dir = path.join(
+    process.cwd(),
+    "public",
+    "tmp",
+    "streamable",
+    file_name
+  );
+
   const output_dir = path.join(
     process.cwd(),
     "public",
@@ -43,6 +51,11 @@ export async function POST(request: NextRequest) {
     file_name
   );
 
+  // create streamable video directory if it doesn't exist
+  if (!fs.existsSync(_streamable_video_dir)) {
+    fs.mkdirSync(_streamable_video_dir, { recursive: true });
+  }
+
   // Create output directories of thumbnails if they don't exist
   if (!fs.existsSync(path.join(output_dir))) {
     fs.mkdirSync(path.join(output_dir), { recursive: true });
@@ -53,61 +66,89 @@ export async function POST(request: NextRequest) {
     fs.mkdirSync(path.join(works_video_dir), { recursive: true });
   }
 
+  // save original video to tmp directory
   await writeFile(_absolute_original_video_path, buffer);
 
+  const _streamable_video_filename = `${uuid()}${path.extname(file.name)}`;
+  const _streamable_video_path = path.join(
+    _streamable_video_dir,
+    _streamable_video_filename
+  );
+
+  // convert to streamable
   return Promise.promisify((cb) => {
-    Ffmpeg.ffprobe(_absolute_original_video_path, (err, metadata) => {
-      if (err) {
-        return cb(err);
-      }
-      return cb(null, metadata);
-    });
+    Ffmpeg(_absolute_original_video_path)
+      .outputOptions(["-c:v libvpx-vp9", "-crf 30"])
+      .outputOptions(["-b:v 0", "-deadline realtime"])
+      .outputOptions(["-c:a aac", "-b:a 128k"])
+      .outputOptions(["-vf scale=540:360"])
+      .outputOptions(["-movflags +faststart"])
+      .output(_streamable_video_path)
+      .on("end", () => {
+        cb(null);
+      })
+      .on("error", (err) => {
+        cb(err);
+      })
+      .run();
   })()
-    .then(async (metadata: any) => {
-      const timestamps = getTickerTimestamps(metadata.format.duration, 16);
-
-      // create working file named start_end.mp4, start and end is timestampsMS
-      const _work_file_name = `00000_${Math.floor(
-        metadata.format.duration * 1000
-      )}.mp4`;
-      const absolute_work_video_file_path = path.join(
-        works_video_dir,
-        _work_file_name
-      );
-      await writeFile(absolute_work_video_file_path, buffer);
-
+    .then(() => {
       return Promise.promisify((cb) => {
-        Ffmpeg(_absolute_original_video_path)
-          .takeScreenshots({
-            timestamps,
-            filename: `%000i.png`,
-            size: "160x120",
-            folder: output_dir,
-          })
-          .on("end", () => {
-            return cb(null);
-          })
-          .on("error", (err: any) => {
+        Ffmpeg.ffprobe(_streamable_video_path, (err, metadata) => {
+          if (err) {
             return cb(err);
-          });
-      })()
-        .then(() => {
-          return NextResponse.json({
-            success: true,
-            metadata,
-            timestamps,
-            filename: file_name,
-            workfilename: _work_file_name,
-          });
-        })
-        .catch((err) => {
-          return NextResponse.json({
-            success: false,
-            error: err,
-          });
+          }
+          return cb(null, metadata);
         });
+      })().then((metadata: any) => {
+        console.log("metadata", metadata);
+
+        // create working file named start_end.mp4, start and end is timestampsMS streamed in
+        const _work_file_name = `00000_${Math.floor(
+          metadata.format.duration * 1000
+        )}${path.extname(file.name)}`;
+        const absolute_work_video_file_path = path.join(
+          works_video_dir,
+          _work_file_name
+        );
+        fs.copyFileSync(_streamable_video_path, absolute_work_video_file_path);
+
+        const timestamps = getTickerTimestamps(metadata.format.duration, 16);
+        return Promise.promisify((cb) => {
+          Ffmpeg(_streamable_video_path)
+            .takeScreenshots({
+              timestamps,
+              filename: `%000i.png`,
+              size: "160x120",
+              folder: output_dir,
+            })
+            .on("end", () => {
+              return cb(null);
+            })
+            .on("error", (err: any) => {
+              return cb(err);
+            });
+        })()
+          .then(() => {
+            return NextResponse.json({
+              success: true,
+              metadata,
+              timestamps,
+              filename: file_name,
+              workfilename: _work_file_name,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            return NextResponse.json({
+              success: false,
+              error: err,
+            });
+          });
+      });
     })
     .catch((err) => {
+      console.log(err);
       return NextResponse.json({
         success: false,
         error: err,
