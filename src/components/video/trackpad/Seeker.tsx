@@ -12,7 +12,7 @@ const Seeker = ({
   currentTimeMs: number;
   tickerWidth: number;
   playing: boolean;
-  seekTo: (toInSeconds: number) => void;
+  seekTo: (toInMs: number) => void;
   movePayload: { move: boolean; distance: number };
 }) => {
   const [mouseClicked, setMouseClicked] = useState(false);
@@ -56,19 +56,21 @@ const Seeker = ({
   const handleSeekerMove = (e: MouseEvent) => {
     if (!mouseClicked || e.buttons != 1) return;
     const deltaX = e.clientX - mousePos.x;
+
     const translateX = getTranslateX(seekerRef);
     let newTranslateX = translateX + deltaX;
     if (newTranslateX < 0) newTranslateX = 0;
     if (newTranslateX > total_canvas_width) newTranslateX = total_canvas_width;
     moveSeekBar(newTranslateX);
+    const seek_to_Ms =
+      (newTranslateX / total_canvas_width) * total_duration * 1000;
+
+    seekTo(seek_to_Ms);
+    setTimeViewContent(seek_to_Ms);
     setMousePos({
       x: e.clientX,
       y: e.clientY,
     });
-    const seek_to_seconds =
-      (newTranslateX / total_canvas_width) * total_duration;
-    seekTo(seek_to_seconds);
-    setTimeViewContent(Math.floor(seek_to_seconds * 1000));
   };
 
   const setTimeViewContent = (timeMS: number) => {
@@ -90,13 +92,13 @@ const Seeker = ({
   useEffect(() => {
     // register move seekbar request from tickerlist
     if (movePayload.move) {
-      const seek_to_seconds =
-        (movePayload.distance / total_canvas_width) * total_duration;
-      seekTo(seek_to_seconds);
+      const seek_to_Ms =
+        (movePayload.distance / total_canvas_width) * total_duration * 1000;
+      seekTo(seek_to_Ms);
       moveSeekBar(movePayload.distance);
       movePayload.move = false;
     }
-    // add event listeners
+    // add mousemove event listeners
     if (mouseClicked) {
       window.addEventListener("mousemove", handleSeekerMove);
       window.addEventListener("mouseup", handleMouseUp);

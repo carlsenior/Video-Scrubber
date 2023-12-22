@@ -17,7 +17,7 @@ const RangeMaskContainer = ({
   };
   handleMoveSeekBar: (movePayload: { move: boolean; distance: number }) => void;
 }) => {
-  const { metaData, setMetaData } = useContext(AppContext);
+  const { metaData, setWorkStatus } = useContext(AppContext);
 
   const containerRef = useRef(null);
   // total duration of media
@@ -51,6 +51,12 @@ const RangeMaskContainer = ({
       rStart: Number(event.currentTarget.value),
       rEnd: original_pair.rEnd,
     };
+
+    // prevent out of rEnd
+    if (new_pair.rStart > new_pair.rEnd - 3) {
+      return;
+    }
+
     setRStart_rEnd_pairs([
       ...rStart_rEnd_pairs.slice(0, _index),
       new_pair,
@@ -65,6 +71,18 @@ const RangeMaskContainer = ({
     handleMoveSeekBar({
       move: true,
       distance: _amount_of_changes + getWidthInBase(_timestamps[0]),
+    });
+
+    // update working status
+    setWorkStatus({
+      workfile,
+      mask: -1,
+      startMs:
+        _timestamps[0] +
+        (_timestamps[1] - _timestamps[0]) * (new_pair.rStart / 100),
+      endMs:
+        _timestamps[1] -
+        (1 - new_pair.rEnd / 100) * (_timestamps[1] - _timestamps[0]),
     });
   };
 
@@ -88,6 +106,12 @@ const RangeMaskContainer = ({
       rStart: original_pair.rStart,
       rEnd: Number(event.currentTarget.value),
     };
+
+    // prevent out of rStart
+    if (new_pair.rEnd < new_pair.rStart + 3) {
+      return;
+    }
+
     setRStart_rEnd_pairs([
       ...rStart_rEnd_pairs.slice(0, _index),
       new_pair,
@@ -102,6 +126,18 @@ const RangeMaskContainer = ({
     handleMoveSeekBar({
       move: true,
       distance: getWidthInBase(_timestamps[1]) - _amount_of_changes,
+    });
+
+    // update working status
+    setWorkStatus({
+      workfile,
+      mask: -1,
+      startMs:
+        _timestamps[0] +
+        ((_timestamps[1] - _timestamps[0]) * new_pair.rStart) / 100,
+      endMs:
+        _timestamps[1] -
+        (1 - new_pair.rEnd / 100) * (_timestamps[1] - _timestamps[0]),
     });
   };
 

@@ -6,12 +6,15 @@ import LoadingSpinner from "./LoadingSpinner";
 import ProgressContainer from "./ProgressContainer";
 import { AxiosRequestConfig } from "axios";
 import { AppContext } from "@/app/page";
+import { getTimeStampsMsFromFileName } from "@/lib/generalHelpers";
 
 const FileUploadForm = () => {
   const [file, setFile] = useState<File>();
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const { metaData, setMetaData } = useContext(AppContext);
+
+  const { setWorkStatus } = useContext(AppContext);
 
   const fileInputRef = useRef(null);
 
@@ -52,6 +55,16 @@ const FileUploadForm = () => {
         basename: res.basename,
         timestamps: res.timestamps,
         works: res.workfilenames,
+      });
+
+      const _work_file = res.workfilenames[0];
+      const _timestamps = getTimeStampsMsFromFileName(_work_file);
+
+      setWorkStatus({
+        workfile: _work_file,
+        mask: -1,
+        startMs: _timestamps[0],
+        endMs: _timestamps[1],
       });
 
       setTimeout(() => {

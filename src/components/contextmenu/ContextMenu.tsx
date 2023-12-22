@@ -18,6 +18,10 @@ const ContextMenu = ({
     }
   };
 
+  const splitMedia = () => {
+    console.log("split");
+  };
+
   useEffect(() => {
     window.addEventListener("click", handleShowMenu);
     return () => {
@@ -26,7 +30,7 @@ const ContextMenu = ({
   });
   return (
     <div
-      className="absolute left-0 top-0 bg-black z-50 rounded"
+      className="absolute left-0 top-0 bg-black z-30 rounded"
       ref={menuRef}
       style={{
         left: position.x,
@@ -62,7 +66,10 @@ const ContextMenu = ({
         </button>
       </div>
       <ul className="menu flex flex-col shadow-xl overflow-hidden">
-        <li className="flex cursor-pointer items-center hover:bg-gray-200 hover:text-gray-800 transition-all ease-linear dark:hover:bg-gray-800/50 p-2 w-full h-full text-white-700 relative min-w-[200px]">
+        <li
+          onClick={splitMedia}
+          className="flex cursor-pointer items-center hover:bg-gray-200 hover:text-gray-800 transition-all ease-linear dark:hover:bg-gray-800/50 p-2 w-full h-full text-white-700 relative min-w-[200px]"
+        >
           <svg
             fill="currentColor"
             className="w-4 h-4 "

@@ -1,18 +1,27 @@
 import React from "react";
 
 const Blank = ({
-  width,
-  height,
+  size,
   isShow,
 }: {
-  width: number;
-  height: number;
+  size: {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  };
   isShow: boolean;
 }) => {
   return (
     <div
-      className="absoulute bg-white left-0 top-0"
-      style={{ width, height, display: isShow ? "block" : "none" }}
+      className="bg-[#101010] absolute"
+      style={{
+        width: size.width,
+        height: size.height,
+        display: isShow ? "block" : "none",
+        left: size.left,
+        top: size.top,
+      }}
     ></div>
   );
 };

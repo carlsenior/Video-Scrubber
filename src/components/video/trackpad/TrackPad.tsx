@@ -14,7 +14,7 @@ const TrackPad = ({
   playing,
 }: {
   currentTimeMs: number;
-  seekTo: (toInSeconds: number) => void;
+  seekTo: (toInMs: number) => void;
   playing: boolean;
 }) => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -44,11 +44,6 @@ const TrackPad = ({
       // decrease ticker count
       if (tickerCounts > 32) setTickerCounts(tickerCounts - CELLS_COUNT / 2); // -8 cells for smoothly scrolling
     }
-  };
-
-  const moveSeekBar = (distanceX: number) => {
-    const seekBar = parentRef.current!.parentElement as HTMLDivElement;
-    seekBar.style.transform = `translateX(${distanceX}px)`;
   };
 
   const handleShowContext = (e: any) => {

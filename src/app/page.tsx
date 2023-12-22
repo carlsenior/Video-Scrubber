@@ -15,6 +15,18 @@ const AppContext = createContext<any>({});
 export default function Home() {
   const [metaData, setMetaData] = useState<any>({});
 
+  const [workStatus, setWorkStatus] = useState<{
+    workfile: string;
+    mask: number;
+    startMs: number;
+    endMs: number;
+  }>({
+    workfile: "",
+    mask: -1,
+    startMs: 0,
+    endMs: 0,
+  });
+
   return (
     <AppContext.Provider
       value={{
@@ -24,6 +36,8 @@ export default function Home() {
         TMP_STREAMABLE_FOLDER,
         CELLS_COUNT,
         metaData,
+        workStatus,
+        setWorkStatus,
         setMetaData,
       }}
     >
