@@ -18,6 +18,7 @@ const RangeMaskContainer = ({
   handleMoveSeekBar: (movePayload: { move: boolean; distance: number }) => void;
 }) => {
   const { metaData, setMetaData } = useContext(AppContext);
+
   const containerRef = useRef(null);
   // total duration of media
   const duration = metaData.duration;
@@ -67,10 +68,7 @@ const RangeMaskContainer = ({
     });
   };
 
-  const handleMoveSeekBarInInputRange = (e: MouseEvent, workfile: string) => {
-    const _target = e.target as HTMLDivElement;
-    const index = metaData.works.indexOf(workfile);
-    const _timestamps = getTimeStampsMsFromFileName(workfile);
+  const handleMoveSeekBarInInputRange = (e: MouseEvent) => {
     const _distance =
       e.clientX -
       (

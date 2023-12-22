@@ -1,12 +1,5 @@
-import React, {
-  ChangeEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useEffect, useRef } from "react";
 import "./index.scss";
-import { AppContext } from "@/app/page";
 
 const RangeInput = ({
   workfile,
@@ -31,13 +24,17 @@ const RangeInput = ({
     arg1: ChangeEvent<HTMLInputElement>
   ) => void;
   handleUpdateEnd: (arg0: string, arg1: ChangeEvent<HTMLInputElement>) => void;
-  handleMoveSeekBar: (e: MouseEvent, workfile: string) => void;
+  handleMoveSeekBar: (e: MouseEvent) => void;
 }) => {
   const clipRef = useRef(null);
   const moveSeekBar = (e: MouseEvent) => {
     if (e.target == clipRef.current) {
-      handleMoveSeekBar(e, workfile);
+      handleMoveSeekBar(e);
     }
+  };
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    handleUpdateEnd(workfile, e);
   };
 
   useEffect(() => {

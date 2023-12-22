@@ -6,6 +6,7 @@ import Seeker from "./Seeker";
 import { AppContext } from "@/app/page";
 import TickersList from "./TickersList";
 import ThumbCanvasContainer from "./canvas/ThumbCanvasContainer";
+import ContextMenu from "@/components/contextmenu/ContextMenu";
 
 const TrackPad = ({
   currentTimeMs,
@@ -21,6 +22,12 @@ const TrackPad = ({
 
   const [tickerWidth, setTickerWidth] = useState(0);
   const [tickerCounts, setTickerCounts] = useState(CELLS_COUNT * 2); // because intial ticker count is 16
+
+  const [showContext, setShowContext] = useState(false);
+  const [contextPos, setContextPos] = useState({
+    x: 0,
+    y: 0,
+  });
 
   const [movePayload, setMovePayload] = useState({
     move: false,
@@ -44,6 +51,18 @@ const TrackPad = ({
     seekBar.style.transform = `translateX(${distanceX}px)`;
   };
 
+  const handleShowContext = (e: any) => {
+    const _target = e.currentTarget as HTMLElement;
+    e.preventDefault();
+
+    setContextPos({
+      x: e.clientX - _target.getBoundingClientRect().x,
+      y: e.clientY - _target.getBoundingClientRect().y,
+    });
+
+    setShowContext(true);
+  };
+
   useEffect(() => {
     const parent_width = parentRef.current!.clientWidth as unknown as number;
     setTickerWidth(Math.floor((parent_width - 22) / CELLS_COUNT)); // margin-left: 10px, additioinal 12px of end
@@ -55,7 +74,14 @@ const TrackPad = ({
       className="flex flex-col relative mt-4 w-full h-[200px] text-[#eee] overflow-y-hidden user-select-none"
       ref={parentRef}
       onScroll={onScroll}
+      onContextMenu={handleShowContext}
     >
+      {showContext && (
+        <ContextMenu
+          position={contextPos}
+          closeMenu={() => setShowContext(false)}
+        />
+      )}
       <TickersList
         count={tickerCounts}
         tickerWidth={tickerWidth}
