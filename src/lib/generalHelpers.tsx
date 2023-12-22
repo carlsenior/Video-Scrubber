@@ -67,3 +67,12 @@ export function getTimeStampsMsFromFileName(filename: string) {
   const _remove_ext_name = filename.replace(/\..+$/g, "");
   return _remove_ext_name.split("_").map((x) => Number(x));
 }
+
+// get width in base media
+export function getWidthInBaseMedia(
+  ms: number,
+  canvasWidth: number,
+  base_duration: number
+) {
+  return Math.floor(canvasWidth * (ms / (base_duration * 1000)));
+}

@@ -15,3 +15,7 @@
 .timeviewer {
   transform: translateX(-50%);
 }
+
+.user-select-auto {
+  user-select: auto;
+}

@@ -1,26 +1,30 @@
 import { AppContext } from "@/app/page";
-import { getTimeStampsMsFromFileName } from "@/lib/generalHelpers";
-import React, {
-  ChangeEvent,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import {
+  getTimeStampsMsFromFileName,
+  getWidthInBaseMedia,
+} from "@/lib/generalHelpers";
+import React, { useContext, useMemo, useState } from "react";
 import RangeInput from "./RangeInput";
 // import { cloneDeep } from "lodash";
 import Mask from "./Mask";
-import { getTrimedMedia } from "@/lib/apiHelper";
 
 const RangeMaskContainer = ({
   canvasSize,
+  handleMoveSeekBar,
 }: {
   canvasSize: {
     width: number;
     height: number;
   };
+  handleMoveSeekBar: (movePayload: { move: boolean; distance: number }) => void;
 }) => {
   const { metaData, setMetaData } = useContext(AppContext);
+  // total duration of media
+  const duration = metaData.duration;
+
+  const getWidthInBase = (positionMs: number) => {
+    return getWidthInBaseMedia(positionMs, canvasSize.width, duration);
+  };
 
   const initial_range_pairs = metaData.works.map(
     (work_file_name: string, i: number) => {
@@ -33,9 +37,6 @@ const RangeMaskContainer = ({
 
   const [rStart_rEnd_pairs, setRStart_rEnd_pairs] =
     useState<{ rStart: number; rEnd: number }[]>(initial_range_pairs);
-
-  // total duration of media
-  const duration = metaData.duration;
 
   // // we create initial n+1 masks
   // let _initial_mask_pairs: {
@@ -108,6 +109,17 @@ const RangeMaskContainer = ({
       new_pair,
       ...rStart_rEnd_pairs.slice(_index + 1),
     ]);
+
+    // handle move seekbar
+    const _timestamps = getTimeStampsMsFromFileName(workfile);
+    const _amount_of_changes =
+      event.currentTarget.getBoundingClientRect().width *
+      (new_pair.rStart / 100);
+    handleMoveSeekBar({
+      move: true,
+      distance: _amount_of_changes + getWidthInBase(_timestamps[0]),
+    });
+
     // // handle the update of mask
     // const mask_data = mStart_mEnd_pairs[index];
     // setMStart_mEnd_pairs([
@@ -136,6 +148,17 @@ const RangeMaskContainer = ({
       new_pair,
       ...rStart_rEnd_pairs.slice(_index + 1),
     ]);
+
+    // handle move seekbar
+    const _timestamps = getTimeStampsMsFromFileName(workfile);
+    const _amount_of_changes =
+      event.currentTarget.getBoundingClientRect().width *
+      (1 - new_pair.rEnd / 100);
+    handleMoveSeekBar({
+      move: true,
+      distance: getWidthInBase(_timestamps[1]) - _amount_of_changes,
+    });
+
     // // handle the update of mask
     // const mask_data = mStart_mEnd_pairs[index + 1];
     // setMStart_mEnd_pairs([
@@ -217,49 +240,51 @@ const RangeMaskContainer = ({
     // track previous stamp
     let _previous_stamps_track: number[] = [];
 
-    let inputList = metaData.works.map((work_file_name: string, i: number) => {
-      const _timeStamps = getTimeStampsMsFromFileName(work_file_name);
-      const _left = Math.floor(
-        canvasSize.width * (_timeStamps[0] / (duration * 1000))
-      );
-      const _width = Math.floor(
-        (canvasSize.width * (_timeStamps[1] - _timeStamps[0])) /
-          (duration * 1000)
-      );
+    const inputList = metaData.works.map(
+      (work_file_name: string, i: number) => {
+        const _timeStamps = getTimeStampsMsFromFileName(work_file_name);
+        const _left = Math.floor(
+          canvasSize.width * (_timeStamps[0] / (duration * 1000))
+        );
+        const _width = Math.floor(
+          (canvasSize.width * (_timeStamps[1] - _timeStamps[0])) /
+            (duration * 1000)
+        );
 
-      const leftMask = (
-        <Mask
-          key={`mask-${i}`}
-          index={i}
-          previous={i == 0 ? [] : _previous_stamps_track}
-          current={_timeStamps}
-          rStart={rStart_rEnd_pairs[i].rStart}
-          rEnd={i == 0 ? 100 : rStart_rEnd_pairs[i - 1].rEnd}
-          canvasWidth={canvasSize.width}
-          height={canvasSize.height}
-        />
-      );
-      _previous_stamps_track = _timeStamps;
-
-      return (
-        <>
-          {leftMask}
-          <RangeInput
-            key={`range-${i}`}
-            workfile={work_file_name}
-            left={_left}
-            size={{
-              width: _width,
-              height: canvasSize.height,
-            }}
+        const leftMask = (
+          <Mask
+            key={`mask-${i}`}
+            index={i}
+            previous={i == 0 ? [] : _previous_stamps_track}
+            current={_timeStamps}
             rStart={rStart_rEnd_pairs[i].rStart}
-            rEnd={rStart_rEnd_pairs[i].rEnd}
-            handleUpdateStart={handleUpdateStart}
-            handleUpdateEnd={handleUpdateEnd}
+            rEnd={i == 0 ? 100 : rStart_rEnd_pairs[i - 1].rEnd}
+            canvasWidth={canvasSize.width}
+            height={canvasSize.height}
           />
-        </>
-      );
-    });
+        );
+        _previous_stamps_track = _timeStamps;
+
+        return (
+          <div key={`div-mask-input-${i}`}>
+            {leftMask}
+            <RangeInput
+              key={`range-${i}`}
+              workfile={work_file_name}
+              left={_left}
+              size={{
+                width: _width,
+                height: canvasSize.height,
+              }}
+              rStart={rStart_rEnd_pairs[i].rStart}
+              rEnd={rStart_rEnd_pairs[i].rEnd}
+              handleUpdateStart={handleUpdateStart}
+              handleUpdateEnd={handleUpdateEnd}
+            />
+          </div>
+        );
+      }
+    );
 
     const final_right_mask = (
       <Mask

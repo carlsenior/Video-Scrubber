@@ -61,7 +61,10 @@ const TrackPad = ({
         tickerWidth={tickerWidth}
         handleMoveSeekBar={setMovePayload}
       />
-      <ThumbCanvasContainer tickerWidth={tickerWidth} />
+      <ThumbCanvasContainer
+        tickerWidth={tickerWidth}
+        handleMoveSeekBar={setMovePayload}
+      />
       <Seeker
         currentTimeMs={currentTimeMs}
         tickerWidth={tickerWidth}

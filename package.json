@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/bluebird": "^3.5.42",
+    "@types/classnames": "^2.3.1",
     "@types/fluent-ffmpeg": "^2.1.24",
     "@types/lodash": "^4.14.202",
     "axios": "^1.6.2",
