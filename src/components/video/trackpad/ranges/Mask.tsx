@@ -92,7 +92,7 @@ const Mask = ({
     <div
       ref={maskRef}
       className={_classnames}
-      style={{ left: _left, width: _width, height: height + 4 }} // that's why border 2px
+      style={{ left: _left, width: Math.round(_width), height: height + 4 }} // that's why border 2px
     ></div>
   );
 };

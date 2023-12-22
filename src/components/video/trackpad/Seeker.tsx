@@ -122,7 +122,7 @@ const Seeker = ({
       id="seeker"
       ref={seekerRef}
       onMouseDown={handleMouseDown}
-      className="flex absolute w-[20px] h-full justify-center top-0 z-10 cursor-col-resize"
+      className="flex absolute w-[20px] h-full justify-center top-0 z-20 cursor-col-resize"
     >
       <svg
         viewBox="0 0 10 13"

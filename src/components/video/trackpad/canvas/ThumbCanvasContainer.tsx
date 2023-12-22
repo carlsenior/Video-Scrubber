@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  ChangeEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import ThumbCanvas from "./ThumbCanvas";
 import { AppContext } from "@/app/page";
 import RangeMaskContainer from "../ranges/RangeMaskContainer";
@@ -25,17 +19,6 @@ const ThumbCanvasContainer = ({
     width: tickerWidth * CELLS_COUNT, // cell size is tickerWidth + 2px for border
     height: 0,
   });
-
-  // states for range input
-  const [rStart, setRStart] = useState(0);
-  const [rEnd, setREnd] = useState(100);
-
-  const handleUpdateRange = (func: (value: number) => void) => {
-    return (e: ChangeEvent<HTMLInputElement>) => {
-      console.log(e.target.value);
-      func(e.target.value as unknown as number);
-    };
-  };
 
   useEffect(() => {
     const containerDiv = parentRef.current as unknown as HTMLCanvasElement;

@@ -3,9 +3,8 @@ import {
   getTimeStampsMsFromFileName,
   getWidthInBaseMedia,
 } from "@/lib/generalHelpers";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useRef, useState } from "react";
 import RangeInput from "./RangeInput";
-// import { cloneDeep } from "lodash";
 import Mask from "./Mask";
 
 const RangeMaskContainer = ({
@@ -19,6 +18,7 @@ const RangeMaskContainer = ({
   handleMoveSeekBar: (movePayload: { move: boolean; distance: number }) => void;
 }) => {
   const { metaData, setMetaData } = useContext(AppContext);
+  const containerRef = useRef(null);
   // total duration of media
   const duration = metaData.duration;
 
@@ -38,66 +38,12 @@ const RangeMaskContainer = ({
   const [rStart_rEnd_pairs, setRStart_rEnd_pairs] =
     useState<{ rStart: number; rEnd: number }[]>(initial_range_pairs);
 
-  // // we create initial n+1 masks
-  // let _initial_mask_pairs: {
-  //   mLeft: number;
-  //   mWidth: number;
-  // }[] = metaData.works.map((work_file_name: string, i: number) => {
-  //   return {
-  //     mLeft: 0,
-  //     mWidth: 0,
-  //   };
-  // });
-
-  // _initial_mask_pairs.push({
-  //   mLeft: 0,
-  //   mWidth: 0,
-  // });
-
-  // const [mStart_mEnd_pairs, setMStart_mEnd_pairs] =
-  //   useState<{ mLeft: number; mWidth: number }[]>(_initial_mask_pairs);
-
-  // const maskList = mStart_mEnd_pairs.map(
-  //   (mask_pair: { mLeft: number; mWidth: number }, i: number) => {
-  //     return (
-  //       <Mask
-  //         key={i}
-  //         left={mask_pair.mLeft}
-  //         width={mask_pair.mWidth}
-  //         height={canvasSize.height}
-  //       />
-  //     );
-  //   }
-  // );
-
   const handleUpdateStart = function (
     workfile: string,
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     const _index = metaData.works.indexOf(workfile);
 
-    // const rStart = Number(event.currentTarget.value);
-    // const _timestamps = getTimeStampsMsFromFileName(workfile);
-    // const _subDurationMs = _timestamps[1] - _timestamps[0];
-    // const startMs = Math.floor(
-    //   _timestamps[0] + (rStart / 100) * _subDurationMs
-    // );
-    // const endMs = _timestamps[1];
-    // const res = await getTrimedMedia(
-    //   metaData.basename,
-    //   workfile,
-    //   startMs,
-    //   endMs
-    // );
-    // setMetaData(
-    //   Object.assign({}, metaData, {
-    //     works: [
-    //       ...metaData.works.slice(0, _index),
-    //       res.new_work_file,
-    //       ...metaData.works.slice(_index + 1),
-    //     ],
-    //   })
-    // );
     // handle the update of rStart
     const original_pair = rStart_rEnd_pairs[_index];
     const new_pair = {
@@ -119,18 +65,19 @@ const RangeMaskContainer = ({
       move: true,
       distance: _amount_of_changes + getWidthInBase(_timestamps[0]),
     });
+  };
 
-    // // handle the update of mask
-    // const mask_data = mStart_mEnd_pairs[index];
-    // setMStart_mEnd_pairs([
-    //   ...mStart_mEnd_pairs.slice(0, index),
-    //   {
-    //     mLeft: mask_data.mLeft,
-    //     mWidth:
-    //       mask_data.mWidth + event.target.offsetWidth * (new_pair.rStart / 100),
-    //   },
-    //   ...mStart_mEnd_pairs.slice(index + 1),
-    // ]);
+  const handleMoveSeekBarInInputRange = (e: MouseEvent, workfile: string) => {
+    const _target = e.target as HTMLDivElement;
+    const index = metaData.works.indexOf(workfile);
+    const _timestamps = getTimeStampsMsFromFileName(workfile);
+    const _distance =
+      e.clientX -
+      (
+        containerRef.current as unknown as HTMLDivElement
+      ).getBoundingClientRect().x;
+
+    handleMoveSeekBar({ move: true, distance: _distance });
   };
 
   const handleUpdateEnd = function (
@@ -158,83 +105,7 @@ const RangeMaskContainer = ({
       move: true,
       distance: getWidthInBase(_timestamps[1]) - _amount_of_changes,
     });
-
-    // // handle the update of mask
-    // const mask_data = mStart_mEnd_pairs[index + 1];
-    // setMStart_mEnd_pairs([
-    //   ...mStart_mEnd_pairs.slice(0, index + 1),
-    //   {
-    //     mLeft:
-    //       mask_data.mLeft -
-    //       (1 - new_pair.rEnd / 100) * event.target.offsetWidth,
-    //     mWidth:
-    //       mask_data.mWidth +
-    //       (1 - new_pair.rEnd / 100) * event.target.offsetWidth,
-    //   },
-    //   ...mStart_mEnd_pairs.slice(index + 2),
-    // ]);
   };
-
-  // mask list data
-  // let _previous_timestamps = null;
-  // let maskListDatas: {
-  //   mLeft: number;
-  //   mWidth: number;
-  // }[] = [];
-
-  // for (let index = 0; index <= metaData.works.length; index++) {
-  //   const work_file_name = metaData.works[index];
-  //   const _timestamps = getTimeStampsMsFromFileName(work_file_name);
-  //   if (index == 0) {
-  //     maskListDatas.push({
-  //       mLeft: 0,
-  //       mWidth: Math.floor(
-  //         canvasSize.width * (_timestamps[0] / (duration * 1000))
-  //       ),
-  //     });
-  //     _previous_timestamps = _timestamps;
-  //   }
-  // }
-
-  // const maskListDatas = metaData.works.map(
-  //   (work_file_name: string, i: number) => {
-  //     const _timeStamps = getTimeStampsMsFromFileName(work_file_name);
-  //     let _maskData = null;
-  //     if (i == 0) {
-  //       _maskData = {
-  //         mLeft: 0,
-  //         mWidth: Math.floor(
-  //           canvasSize.width * (_timeStamps[0] / (duration * 1000))
-  //         ),
-  //       };
-  //       _previous_timestamps = _timeStamps;
-  //       return _maskData;
-  //     } else {
-  //       _maskData = {
-  //         mLeft: Math.floor(
-  //           canvasSize.width * (_previous_timestamps![1] / (duration * 1000))
-  //         ),
-  //         mWidth: Math.floor(
-  //           (canvasSize.width * (_timeStamps[0] - _previous_timestamps![1])) /
-  //             (duration * 1000)
-  //         ),
-  //       };
-  //       _previous_timestamps = _timeStamps;
-  //       return _maskData;
-  //     }
-  //   }
-  // );
-  // // add one more mask for end
-
-  // maskListDatas.push({
-  //   mLeft: Math.floor(
-  //     canvasSize.width * (_previous_timestamps![1] / (duration * 1000))
-  //   ),
-  //   mWidth: Math.floor(
-  //     canvasSize.width -
-  //       canvasSize.width * (_previous_timestamps![1] / (duration * 1000))
-  //   ),
-  // });
 
   const rangeMaskComponentList = useMemo(() => {
     // track previous stamp
@@ -280,6 +151,7 @@ const RangeMaskContainer = ({
               rEnd={rStart_rEnd_pairs[i].rEnd}
               handleUpdateStart={handleUpdateStart}
               handleUpdateEnd={handleUpdateEnd}
+              handleMoveSeekBar={handleMoveSeekBarInInputRange}
             />
           </div>
         );
@@ -312,6 +184,7 @@ const RangeMaskContainer = ({
   return (
     <div
       className="absolute left-0 top-0"
+      ref={containerRef}
       style={{ width: canvasSize.width, height: canvasSize.height }}
     >
       {rangeMaskComponentList}

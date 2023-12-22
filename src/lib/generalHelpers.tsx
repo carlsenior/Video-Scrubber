@@ -74,5 +74,5 @@ export function getWidthInBaseMedia(
   canvasWidth: number,
   base_duration: number
 ) {
-  return Math.floor(canvasWidth * (ms / (base_duration * 1000)));
+  return canvasWidth * (ms / (base_duration * 1000));
 }

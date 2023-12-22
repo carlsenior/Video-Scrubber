@@ -1,12 +1,12 @@
 import React, {
   ChangeEvent,
-  ChangeEventHandler,
-  FormEvent,
-  FormEventHandler,
+  useContext,
   useEffect,
+  useRef,
+  useState,
 } from "react";
 import "./index.scss";
-import { props } from "bluebird";
+import { AppContext } from "@/app/page";
 
 const RangeInput = ({
   workfile,
@@ -16,6 +16,7 @@ const RangeInput = ({
   rEnd,
   handleUpdateStart,
   handleUpdateEnd,
+  handleMoveSeekBar,
 }: {
   workfile: string;
   left: number;
@@ -30,10 +31,20 @@ const RangeInput = ({
     arg1: ChangeEvent<HTMLInputElement>
   ) => void;
   handleUpdateEnd: (arg0: string, arg1: ChangeEvent<HTMLInputElement>) => void;
+  handleMoveSeekBar: (e: MouseEvent, workfile: string) => void;
 }) => {
-  useEffect(() => {
-    if (size.height == 0) return;
+  const clipRef = useRef(null);
+  const moveSeekBar = (e: MouseEvent) => {
+    if (e.target == clipRef.current) {
+      handleMoveSeekBar(e, workfile);
+    }
+  };
 
+  useEffect(() => {
+    window.addEventListener("dblclick", moveSeekBar);
+    return () => {
+      window.removeEventListener("dblclick", moveSeekBar);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -44,6 +55,7 @@ const RangeInput = ({
     >
       <div
         className="absolute rounded clip-box"
+        ref={clipRef}
         style={{
           width: `calc(${rEnd - rStart}%)`,
           height: `${size.height + 4}px`, // that's why border 2px
@@ -59,7 +71,7 @@ const RangeInput = ({
         value={rStart}
         min={0}
         max={100}
-        onInput={(e: ChangeEvent<HTMLInputElement>) =>
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
           handleUpdateStart(workfile, e)
         }
       />
@@ -68,7 +80,7 @@ const RangeInput = ({
         value={rEnd}
         min={0}
         max={100}
-        onInput={(e: ChangeEvent<HTMLInputElement>) =>
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
           handleUpdateEnd(workfile, e)
         }
       />
